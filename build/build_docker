@@ -1,23 +1,23 @@
 #!/bin/bash
 
 usage () {
-	echo ""
-	echo "Usage:"
-	echo "  ${0} <container name / hash> [ <package> ]"
-	echo "    where package is a single name or ALL"
-	echo ""
+    echo ""
+    echo "Usage:"
+    echo "  ${0} <container name / hash> [ <package> ]"
+    echo "    where package is a single name or ALL"
+    echo ""
 }
 
 image="${1}"
 if [ "x${image}" = "x" ]; then
-	usage
-	exit 0
+    usage
+    exit 0
 fi
 
 pkg="${2}"
 if [ "x${pkg}" = "x" ]; then
-	usage
-	exit 0
+    usage
+    exit 0
 fi
 
 # get the absolute path to the directory with this script
@@ -33,11 +33,12 @@ recipes="${base}/../recipes"
 
 names=""
 if [ "${pkg}" = "ALL" ]; then
-	names=$(ls ${recipes})
+    names=$(ls ${recipes})
 else
-	names=${pkg}
+    names=${pkg}
 fi
 
 eval ${drun} ${image} "${recipes}" \
-"./setup.sh; cd work; for p in ${names}; do conda build ${p} >log_${p} 2>&1; done"
+"./setup.sh; cd work; for p in ${names}; do if [ -d ${p} ]; \
+then conda build ${p} >log_${p} 2>&1; fi; done"
 
