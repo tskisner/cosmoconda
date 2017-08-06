@@ -1,0 +1,37 @@
+#!/bin/bash
+
+usage () {
+	echo ""
+	echo "Usage:"
+	echo "  ${0} [ <package> ]"
+	echo "    where package is a single name or ALL"
+	echo ""
+}
+
+pkg="${1}"
+if [ "x${pkg}" = "x" ]; then
+	usage
+	exit 0
+fi
+
+# get the absolute path to the directory with this script
+pushd $(dirname $0) > /dev/null
+base=$(pwd -P)
+popd > /dev/null
+
+# the recipe directory
+recipes="${base}/../recipes"
+
+names=""
+if [ "${pkg}" = "ALL" ]; then
+	names=$(ls ${recipes})
+else
+	names=${pkg}
+fi
+
+pushd "${recipes}" > /dev/null
+for p in ${names}; do 
+	conda build ${p} >log_${p} 2>&1
+done
+popd > /dev/null
+
